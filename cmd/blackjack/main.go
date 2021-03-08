@@ -23,6 +23,36 @@ func (h Hand) DealerString() string {
 	return h[0].String() + ", **HIDDEN**"
 }
 
+// MinScore returns a score when Ace is equal to 1
+func (h Hand) MinScore() int {
+	s := 0
+	for _, card := range h {
+		s += min(int(card.Rank), 10)
+	}
+	return s
+}
+
+// Score returns a real score
+func (h Hand) Score() int {
+	s := h.MinScore()
+	if s > 11 {
+		return s
+	}
+	for _, card := range h {
+		if card.Rank == deck.Ace {
+			return s + 10
+		}
+	}
+	return s
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
 func main() {
 	cards := deck.New(deck.Deck(3), deck.Shuffle)
 
@@ -51,9 +81,24 @@ func main() {
 		}
 	}
 
+	playerScore, dealerScore := player.Score(), dealer.Score()
 	fmt.Println("==FINAL SCORE==")
 	fmt.Println("Player:", player)
 	fmt.Println("Dealer:", dealer)
+	fmt.Println("Player score:", playerScore)
+	fmt.Println("Dealer score:", dealerScore)
+	switch {
+	case playerScore > 21:
+		fmt.Println("You busted")
+	case dealerScore > 21:
+		fmt.Println("Dealer busted")
+	case playerScore > dealerScore:
+		fmt.Println("You won!")
+	case playerScore < dealerScore:
+		fmt.Println("You lost")
+	default:
+		fmt.Println("Draw")
+	}
 }
 
 func draw(cards []deck.Card) (deck.Card, []deck.Card) {
