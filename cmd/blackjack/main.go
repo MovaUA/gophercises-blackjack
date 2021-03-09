@@ -81,6 +81,14 @@ func main() {
 		}
 	}
 
+	// If dealer score <= 16, we hit
+	// If dealer has a soft 17, we hit
+	for dealer.Score() <= 16 || (dealer.Score() == 17 && dealer.MinScore() != 17) {
+		var card deck.Card
+		card, cards = draw(cards)
+		dealer = append(dealer, card)
+	}
+
 	playerScore, dealerScore := player.Score(), dealer.Score()
 	fmt.Println("==FINAL SCORE==")
 	fmt.Println("Player:", player)
